@@ -5,7 +5,7 @@ import rescueTeamsModel from "../../DB/rescueTeam.model.js";
 export const roles = {
     Victim: "Victim",
     RescueTeam: "RescueTeam",
-    Admin: "Admin",
+    SuperAdmin: "SuperAdmin",
 };
 
 export const auth = (accessRoles = []) => {
@@ -27,6 +27,10 @@ export const auth = (accessRoles = []) => {
                 .findById({ _id: decodedToken.id })
                 .select("name role changePasswordTime");
         } else if (decodedToken.role === "RescueTeam") {
+            user = await rescueTeamsModel
+                .findById({ _id: decodedToken.id })
+                .select("name role changePasswordTime");
+        } else if (decodedToken.role === "SuperAdmin") {
             user = await rescueTeamsModel
                 .findById({ _id: decodedToken.id })
                 .select("name role changePasswordTime");
