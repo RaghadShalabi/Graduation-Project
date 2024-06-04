@@ -2,6 +2,17 @@ import victimModel from "../../../../DB/victim.model.js";
 import sendEmail from "../../../services/sendEmail.js";
 import bcrypt from 'bcryptjs'
 
+// Function to get victim's information by _id in token
+export const getVictimInfo = async (req, res, next) => {
+    // Find the victim by ID from the token
+    const victim = await victimModel.findById(req.user._id);
+    if (!victim) {
+        return next(new Error('Victim not found', { cause: 404 }));
+    }
+
+    // Return the victim's information
+    return res.status(200).json({ message: "Success", victim });
+};
 
 export const setEmergencyContacts = async (req, res, next) => {
     const userId = req.user._id; // ID of the victim from the authenticated user

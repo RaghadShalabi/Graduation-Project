@@ -5,6 +5,7 @@ import { auth } from '../../middleware/auth.js';
 import { endPoint } from './victim.endpoint.js';
 import { asyncHandler } from '../../middleware/errorHandling.js';
 
+router.get('/info', auth(endPoint.getVictimInfo), asyncHandler(victimController.getVictimInfo));
 router.post('/setEmergencyContacts', auth(endPoint.setEmergencyContacts), asyncHandler(victimController.setEmergencyContacts));
 router.post('/setEmergencyMessage', auth(endPoint.setEmergencyMessage), asyncHandler(victimController.setEmergencyMessage));
 router.post('/setHeartAndLocation', auth(endPoint.setHeartAndLocation), asyncHandler(victimController.setHeartAndLocation));

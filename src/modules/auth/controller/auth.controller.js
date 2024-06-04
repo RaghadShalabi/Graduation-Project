@@ -94,7 +94,6 @@ export const signIn = async (req, res, next) => {
         token, 
         refreshToken, 
         role: isVictim ? user.role /*"Victim"*/ : user.role /*"RescueTeam"*/ ,  // Inform the client about the user's role
-        user
     });
 };
 

@@ -2,6 +2,18 @@ import rescueTeamsModel from "../../../../DB/rescueTeam.model.js";
 import victimModel from "../../../../DB/victim.model.js"
 import bcrypt from "bcryptjs"
 
+// Function to get rescue team's information by _id in token
+export const getRescueTeamInfo = async (req, res, next) => {
+    // Find the rescue team by ID from the token
+    const rescueTeam = await rescueTeamsModel.findById(req.user._id);
+    if (!rescueTeam) {
+        return next(new Error('Rescue team not found', { cause: 404 }));
+    }
+
+    // Return the rescue team's information
+    return res.status(200).json({ message: "Success", rescueTeam });
+};
+
 export const getAllVictims = async (req, res, next) => {
     // Find the rescue team by ID
     const rescueTeam = await rescueTeamsModel.findById(req.user._id);

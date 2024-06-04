@@ -1,6 +1,7 @@
 import { roles } from "../../middleware/auth.js";
 
 export const endPoint = {
+    getRescueTeamInfo: [roles.RescueTeam],
     getAllVictims: [roles.RescueTeam],
     getSosVictims: [roles.RescueTeam],
     updateVictimRescueStatus: [roles.RescueTeam],
