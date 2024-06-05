@@ -64,7 +64,7 @@ export const signUp = async (req, res, next) => {
   if (newUser.role === "RescueTeam") {
     return res.status(201).json({
       message:
-        "Account created successfully. Please verify your email to sign in. Your account will be reviewed by an admin before activation.",
+        "Account created successfully. Please verify your email to sign in. Your account will be reviewed by an super admin before activation.",
       newUser,
     });
   }
@@ -173,7 +173,7 @@ export const confirmEmail = async (req, res, next) => {
     return res.redirect(`https://www.google.com`);
   }
 
-  return res.redirect(`https://www.facebook.com`);
+  return res.status(200).json({ message: "Email confirmed successfully", user });
 };
 
 // Controller to send reset password code to the user
