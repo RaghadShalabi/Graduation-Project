@@ -1,6 +1,7 @@
 import rescueTeamsModel from "../../../../DB/rescueTeam.model.js";
 import victimModel from "../../../../DB/victim.model.js";
 import bcrypt from "bcryptjs";
+import sendEmail from "../../../services/sendEmail.js";
 
 // Function to get all RescueTeams needing approval
 export const getPendingRescueTeams = async (req, res, next) => {
@@ -40,6 +41,15 @@ export const approveRescueTeam = async (req, res, next) => {
 
   rescueTeam.acceptedAdmin = true;
   await rescueTeam.save();
+
+  // Send approval email to the RescueTeam
+  const html = `<div>
+      <h2>Approval Notification</h2>
+      <p>Hi ${rescueTeam.name},</b><br>
+      Your account has been approved by a SuperAdmin. You can now sign in and start using the system.</p>
+  </div>`;
+
+  await sendEmail(rescueTeam.email, 'Account Approved', html);
 
   return res
     .status(200)

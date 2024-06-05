@@ -226,6 +226,7 @@ export const sendCode = async (req, res, next) => {
   return res.status(201).json({ message: "success", user });
 };
 
+
 export const forgetPassword = async (req, res, next) => {
   const { newPassword, code } = req.body;
   const email = req.headers["email"]; // Read the email from the request Headers
