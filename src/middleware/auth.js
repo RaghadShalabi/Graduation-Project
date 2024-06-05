@@ -35,7 +35,7 @@ export const auth = (accessRoles = []) => {
                 .findById({ _id: decodedToken.id })
                 .select("name role changePasswordTime");
         }
-
+        
         if (!user) {
             return res.status(404).json({ message: "User registered not found" });
         }

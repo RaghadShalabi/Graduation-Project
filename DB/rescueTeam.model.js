@@ -30,7 +30,7 @@ const rescueTeamsSchema = new Schema({
         type: String,
         default: null,
     },
-    acceptedSuperAdmin: {
+    acceptedAdmin: {
         type: Boolean,
         default: false,
     },

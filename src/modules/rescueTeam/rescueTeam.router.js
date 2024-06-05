@@ -5,6 +5,7 @@ import { endPoint } from '../rescueTeam/rescueTeam.endpoint.js';
 import { auth } from '../../middleware/auth.js';
 import { asyncHandler } from '../../middleware/errorHandling.js';
 
+router.put('/approveRescueTeam/:rescueTeamId', auth(endPoint.approveRescueTeam), asyncHandler(rescueTeamController.approveRescueTeam));
 router.get('/info', auth(endPoint.getRescueTeamInfo), asyncHandler(rescueTeamController.getRescueTeamInfo));
 router.get('/allVictims', auth(endPoint.getAllVictims), asyncHandler(rescueTeamController.getAllVictims));
 router.get('/sosVictims', auth(endPoint.getSosVictims), asyncHandler(rescueTeamController.getSosVictims))

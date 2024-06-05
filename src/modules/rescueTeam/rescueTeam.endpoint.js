@@ -1,6 +1,8 @@
 import { roles } from "../../middleware/auth.js";
+import { approveRescueTeam } from "./controller/rescueTeam.controller.js";
 
 export const endPoint = {
+    approveRescueTeam: [roles.SuperAdmin],
     getRescueTeamInfo: [roles.RescueTeam, roles.SuperAdmin],
     getAllVictims: [roles.RescueTeam, roles.SuperAdmin],
     getSosVictims: [roles.RescueTeam, roles.SuperAdmin],

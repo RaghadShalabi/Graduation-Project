@@ -46,6 +46,13 @@ export const signUp = async (req, res, next) => {
 
     await sendEmail(email, 'Welcome', html); // Sending email to the user's email, not a static one
 
+    if (newUser.role === 'RescueTeam') {
+        return res.status(201).json({ 
+            message: "Account created successfully. Please verify your email to sign in. Your account will be reviewed by an admin before activation.", 
+            newUser 
+        });
+    }
+
     return res.status(201).json({ message: "account created successfully, plz verify your email to signIn", newUser });
 };
 
@@ -72,10 +79,16 @@ export const signIn = async (req, res, next) => {
         return next(new Error("Please confirm your email!", { cause: 403 }));
     }
 
+   // Check if the user is a RescueTeam and if their account has been approved by an admin
+   if (!isVictim && user.role === 'RescueTeam' && !user.acceptedAdmin) {
+    return next(new Error("Your account has not been approved by an super admin yet.", { cause: 403 }));
+}
+
+
     // Compare the provided password with the hashed password stored
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-        return next(new Error("Password incorrect", { cause: 409 }));
+        return next(new Error("Password incorrect", { cause: 400 }));
     }
 
     const token = jwt.sign({
@@ -124,6 +137,12 @@ export const confirmEmail = async (req, res, next) => {
     if (!user) {
         return next(new Error("user not found or your email is verified", { cause: 404 }));
     }
+
+      // Check if the user is a RescueTeam and redirect them to the sign-in page
+      if (user.role === "RescueTeam") {
+        return res.status(200).redirect(process.env.SIGN_IN);
+    }
+
     return res.status(200).json({ message: "Email confirmed successfully", user });
 };
 

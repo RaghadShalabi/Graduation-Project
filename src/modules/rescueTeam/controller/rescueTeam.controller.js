@@ -2,6 +2,26 @@ import rescueTeamsModel from "../../../../DB/rescueTeam.model.js";
 import victimModel from "../../../../DB/victim.model.js"
 import bcrypt from "bcryptjs"
 
+// Function for SuperAdmin to approve a RescueTeam
+export const approveRescueTeam = async (req, res, next) => {
+    const { rescueTeamId } = req.params;
+
+    const superAdmin = await rescueTeamsModel.findById(req.user._id);
+    if (superAdmin.role !== 'SuperAdmin') {
+        return next(new Error("Only SuperAdmins can approve RescueTeams", { cause: 403 }));
+    }
+
+    const rescueTeam = await rescueTeamsModel.findById(rescueTeamId);
+    if (!rescueTeam) {
+        return next(new Error("RescueTeam not found", { cause: 404 }));
+    }
+
+    rescueTeam.acceptedAdmin = true;
+    await rescueTeam.save();
+
+    return res.status(200).json({ message: "RescueTeam approved successfully", rescueTeam });
+};
+
 // Function to get rescue team's information by _id in token
 export const getRescueTeamInfo = async (req, res, next) => {
     // Find the rescue team by ID from the token
