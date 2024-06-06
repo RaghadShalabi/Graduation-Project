@@ -15,7 +15,10 @@ export const getPendingRescueTeams = async (req, res, next) => {
   }
 
   // Find all RescueTeams where acceptedAdmin is false
-  const pendingRescueTeams = await rescueTeamsModel.find({ acceptedAdmin: false });
+  const pendingRescueTeams = await rescueTeamsModel.find({
+    acceptedAdmin: false,
+    role: "RescueTeam",
+  });
 
   // If no pending rescue teams found
   if (pendingRescueTeams.length === 0) {
