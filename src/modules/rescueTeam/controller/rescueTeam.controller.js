@@ -11,7 +11,7 @@ export const getPendingRescueTeams = async (req, res, next) => {
   }
 
   // Find all RescueTeams where acceptedAdmin is false
-  const pendingRescueTeams = await rescueTeamsModel.find({ acceptedAdmin: false });
+  const pendingRescueTeams = await rescueTeamsModel.find({ acceptedAdmin: false }).select("name email city role acceptedAdmin");
 
   // If no pending rescue teams found
   if (pendingRescueTeams.length === 0) {
@@ -34,7 +34,7 @@ export const approveRescueTeam = async (req, res, next) => {
     );
   }
 
-  const rescueTeam = await rescueTeamsModel.findById(rescueTeamId);
+  const rescueTeam = await rescueTeamsModel.findById(rescueTeamId).select("name email city role acceptedAdmin");
   if (!rescueTeam) {
     return next(new Error("RescueTeam not found", { cause: 404 }));
   }
@@ -53,14 +53,14 @@ export const approveRescueTeam = async (req, res, next) => {
 
   return res
     .status(200)
-    .json({ message: "RescueTeam approved successfully", rescueTeam });
+    .json({ message: "Success", rescueTeam });
 };
 
 
 // Function to get rescue team's information by _id in token
 export const getRescueTeamInfo = async (req, res, next) => {
   // Find the rescue team by ID from the token
-  const rescueTeam = await rescueTeamsModel.findById(req.user._id);
+  const rescueTeam = await rescueTeamsModel.findById(req.user._id).select("name email city role");
   if (!rescueTeam) {
     return next(new Error("Rescue team not found", { cause: 404 }));
   }
@@ -85,7 +85,7 @@ export const getAllVictims = async (req, res, next) => {
     return res.status(200).json({ message: "No victims found in this city" });
   }
 
-  return res.status(200).json({ message: "success", victims });
+  return res.status(200).json({ message: "Success", victims });
 };
 
 export const getSosVictims = async (req, res, next) => {
@@ -128,7 +128,7 @@ export const getSosVictims = async (req, res, next) => {
     }
   });
 
-  return res.status(200).json({ message: "success", victims });
+  return res.status(200).json({ message: "Success", victims });
 };
 
 export const updateVictimRescueStatus = async (req, res, next) => {
@@ -154,7 +154,7 @@ export const updateVictimRescueStatus = async (req, res, next) => {
 
   res
     .status(200)
-    .json({ message: "Rescue status updated successfully", victim });
+    .json({ message: "Success", victim });
 };
 
 export const viewMap = async (req, res, next) => {
@@ -168,7 +168,7 @@ export const viewMap = async (req, res, next) => {
   const victims = await victimModel.find({
     city: rescueTeam.city,
     sosStatus: true,
-  });
+  }).select("name email message location city heartRate sosStatus rescueStatus status");
 
   // If no victims are found, return a message indicating this
   if (victims.length === 0) {
@@ -176,9 +176,9 @@ export const viewMap = async (req, res, next) => {
   }
 
   // Extract location of all victims
-  const locations = victims.map((victim) => victim.location);
+  //const locations = victims.map((victim) => victim.location);
 
-  return res.status(200).json({ message: "success", locations });
+  return res.status(200).json({ message: "Success", victims });
 };
 
 export const deleteDeadVictims = async (req, res, next) => {
@@ -203,7 +203,7 @@ export const deleteDeadVictims = async (req, res, next) => {
 
   // If victims are deleted, return a message with the count of deleted victims
   return res.status(200).json({
-    message: "Dead victims deleted successfully",
+    message: "Success",
     deletedCount: result.deletedCount,
   });
 };
@@ -214,7 +214,7 @@ export const updateRescueTeamInfo = async (req, res, next) => {
   const { name, city } = req.body;
 
   // Find the rescue team by ID
-  const rescueTeam = await rescueTeamsModel.findById(req.user._id);
+  const rescueTeam = await rescueTeamsModel.findById(req.user._id).select("name city");
   if (!rescueTeam) {
     return next(new Error("Rescue team not found", { cause: 404 }));
   }
@@ -228,7 +228,7 @@ export const updateRescueTeamInfo = async (req, res, next) => {
 
   // Return a success response
   return res.status(200).json({
-    message: "rescue team user information updated successfully",
+    message: "Success",
     rescueTeam,
   });
 };
@@ -248,7 +248,7 @@ export const updatePassword = async (req, res, next) => {
   }
 
   // Find the rescue team member by ID from the request user object
-  const rescueTeam = await rescueTeamsModel.findById(req.user._id);
+  const rescueTeam = await rescueTeamsModel.findById(req.user._id).select("name email city role password previousPasswords");
 
   // Check if the old password matches the current password stored in the database
   const match = bcrypt.compareSync(oldPassword, rescueTeam.password);
@@ -297,7 +297,7 @@ export const updatePassword = async (req, res, next) => {
 
   // Return a success response
   return res.status(201).json({
-    message: "The password has been updated successfully",
+    message: "Success",
     rescueTeam,
   });
 };
