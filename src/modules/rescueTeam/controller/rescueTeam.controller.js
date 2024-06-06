@@ -82,7 +82,7 @@ export const getAllVictims = async (req, res, next) => {
     .select("name city location heartRate");
 
   if (victims.length === 0) {
-    return res.status(200).json({ message: "No victims found in this city" });
+    return res.status(200).json({ message: "No victims found in this city",victims:[] });
   }
 
   return res.status(200).json({ message: "success", victims });
@@ -105,7 +105,7 @@ export const getSosVictims = async (req, res, next) => {
   if (victims.length === 0) {
     return res
       .status(200)
-      .json({ message: "No unRescued victims found in this city" });
+      .json({ message: "No unRescued victims found in this city", victims: [] });
   }
 
   // Sort unRescued victims by heart rate and timestamp
