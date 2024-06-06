@@ -18,7 +18,7 @@ export const getPendingRescueTeams = async (req, res, next) => {
   const pendingRescueTeams = await rescueTeamsModel.find({
     acceptedAdmin: false,
     role: "RescueTeam",
-  });
+  }).select("name email city role acceptedAdmin");
 
   // If no pending rescue teams found
   if (pendingRescueTeams.length === 0) {
