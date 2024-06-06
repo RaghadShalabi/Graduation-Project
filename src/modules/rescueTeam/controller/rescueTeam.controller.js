@@ -6,22 +6,23 @@ import sendEmail from "../../../services/sendEmail.js";
 // Function to get all RescueTeams needing approval
 export const getPendingRescueTeams = async (req, res, next) => {
   // Check if the requesting user is a SuperAdmin
-  if (req.user.role !== 'SuperAdmin') {
-    return next(new Error("Access denied. Only SuperAdmins can access this resource.", { cause: 403 }));
+  if (req.user.role !== "SuperAdmin") {
+    return next(
+      new Error("Access denied. Only SuperAdmins can access this resource.", {
+        cause: 403,
+      })
+    );
   }
 
   // Find all RescueTeams where acceptedAdmin is false
-  const pendingRescueTeams = await rescueTeamsModel.find({ acceptedAdmin: false });
-
-  // If no pending rescue teams found
-  if (pendingRescueTeams.length === 0) {
-    return res.status(200).json({ message: "No pending RescueTeams found." });
-  }
+  const pendingRescueTeams = await rescueTeamsModel.find({
+    acceptedAdmin: false,
+    role: "RescueTeam",
+  });
 
   // Return the list of pending rescue teams
   return res.status(200).json({ message: "Success", pendingRescueTeams });
 };
-
 
 // Function for SuperAdmin to approve a RescueTeam
 export const approveRescueTeam = async (req, res, next) => {
@@ -49,13 +50,12 @@ export const approveRescueTeam = async (req, res, next) => {
       Your account has been approved by a SuperAdmin. You can now sign in and start using the system.</p>
   </div>`;
 
-  await sendEmail(rescueTeam.email, 'Account Approved', html);
+  await sendEmail(rescueTeam.email, "Account Approved", html);
 
   return res
     .status(200)
     .json({ message: "RescueTeam approved successfully", rescueTeam });
 };
-
 
 // Function to get rescue team's information by _id in token
 export const getRescueTeamInfo = async (req, res, next) => {
