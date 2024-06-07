@@ -201,7 +201,7 @@ export const sendCode = async (req, res, next) => {
 
   // Email the reset password code to the user
   const username = user.name; // Get user's name, or use "User" if name is not available
-  const userType = isVictim ? "victim" : "rescue team"; // Determine the user type
+  const userType = isVictim ? user.role : user.role; // Determine the user type
   const html = `<h2>Reset Password</h2>
         <b>Hi ${username},</b>
         <p>This email is to help you reset your password for your ${userType} account.</p>
@@ -259,14 +259,35 @@ export const forgetPassword = async (req, res, next) => {
     );
   }
 
+  // Check if the new password has been used before
+  const previousPasswords = user.previousPasswords || [];
+  const isPasswordUsedBefore = previousPasswords.some((hash) =>
+    bcrypt.compareSync(newPassword, hash)
+  );
+  if (isPasswordUsedBefore) {
+    return next(
+      new Error(
+        "New password must be different from previously used passwords",
+        { cause: 409 }
+      )
+    );
+  }
+
   // Hash the new password
   const hashNewPassword = bcrypt.hashSync(
     newPassword,
     parseInt(process.env.SALT_ROUND)
   );
 
+
+  //store the old password in the previousPasswords array if not already stored
+  if (!previousPasswords.some((hash) => bcrypt.compareSync(user.password, hash))) {
+    previousPasswords.push(user.password);
+  }
+
   // Update user's password and reset the code
   user.password = hashNewPassword;
+  user.previousPasswords = previousPasswords;
   user.sendCode = null;
   user.changePasswordTime = Date.now();
   await user.save();

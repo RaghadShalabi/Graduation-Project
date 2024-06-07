@@ -293,8 +293,11 @@ export const updatePassword = async (req, res, next) => {
     parseInt(process.env.SALT_ROUND)
   );
 
-  // Update the password and store the old password in the previousPasswords array
-  previousPasswords.push(rescueTeam.password);
+  // Update the password and store the old password in the previousPasswords array if not already stored
+  if (!previousPasswords.some((hash) => bcrypt.compareSync(rescueTeam.password, hash))) {
+    previousPasswords.push(rescueTeam.password);
+  }
+  
   await rescueTeamsModel.updateOne(
     { _id: req.user._id },
     { password: hashNewPassword, previousPasswords }
