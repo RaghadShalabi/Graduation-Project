@@ -40,10 +40,6 @@ const victimSchema = new Schema({
         type: Number,
         default: 0,
     },
-    status: {
-        type: String,
-        enum: ['death', 'normal', 'highRisk'],
-    },
     rescueStatus: {
         type: Boolean,
         default: false,
