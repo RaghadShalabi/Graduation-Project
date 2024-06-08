@@ -158,14 +158,12 @@ export const updatePassword = async (req, res, next) => {
     // Hash the new password
     const hashNewPassword = bcrypt.hashSync(newPassword, parseInt(process.env.SALT_ROUND));
 
-    // Update the password and store the old password in the previousPasswords array if not already stored
-  if (!previousPasswords.some((hash) => bcrypt.compareSync(victim.password, hash))) {
-    previousPasswords.push(victim.password);
-  }
-    await victimModel.updateOne(
-        { _id: req.user._id },
-        { password: hashNewPassword, previousPasswords }
-    );
+    // Update the password and store the old password in the previousPasswords array 
+        previousPasswords.push(victim.password);
+
+    victim.password = hashNewPassword;
+    victim.previousPasswords = previousPasswords;
+    await victim.save()
 
     // Return a success response
     return res.status(201).json({ message: "The password has been updated successfully", victim });

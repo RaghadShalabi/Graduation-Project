@@ -34,6 +34,7 @@ export const approveRescueTeam = async (req, res, next) => {
   const { rescueTeamId } = req.params;
 
   const superAdmin = await rescueTeamsModel.findById(req.user._id);
+
   if (superAdmin.role !== "SuperAdmin") {
     return next(
       new Error("Only SuperAdmins can approve RescueTeams", { cause: 403 })
@@ -62,6 +63,40 @@ export const approveRescueTeam = async (req, res, next) => {
     .json({ message: "Success", rescueTeam });
 };
 
+// Function for SuperAdmin to delete a RescueTeam
+export const deleteRescueTeam = async (req, res, next) => {
+  const { rescueTeamId } = req.params;
+
+  const superAdmin = await rescueTeamsModel.findById(req.user._id);
+
+  // Check if the user is a SuperAdmin
+  if (superAdmin.role !== "SuperAdmin") {
+    return next(
+      new Error("Only SuperAdmins can delete RescueTeams", { cause: 403 })
+    );
+  }
+
+  // Find and delete the rescue team by ID
+  const rescueTeam = await rescueTeamsModel.findByIdAndDelete(rescueTeamId);
+  if (!rescueTeam) {
+    return next(new Error('RescueTeam not found', { cause: 404 }));
+  }
+
+  // Send deletion email to the RescueTeam
+  const html = `<div>
+      <h2>Account Deletion Notification</h2>
+      <p>Hi ${rescueTeam.name},</b><br>
+      Your account has been deleted by a SuperAdmin.</p>
+  </div>`;
+
+  await sendEmail(rescueTeam.email, "Account Deleted", html);
+
+  return res
+    .status(200)
+    .json({ message: "Success" });
+};
+
+
 // Function to get rescue team's information by _id in token
 export const getRescueTeamInfo = async (req, res, next) => {
   // Find the rescue team by ID from the token
@@ -87,7 +122,7 @@ export const getAllVictims = async (req, res, next) => {
     .select("name city location heartRate");
 
   if (victims.length === 0) {
-    return res.status(200).json({ message: "No victims found in this city",victims:[] });
+    return res.status(200).json({ message: "No victims found in this city", victims: [] });
   }
 
   return res.status(200).json({ message: "Success", victims });
@@ -293,15 +328,12 @@ export const updatePassword = async (req, res, next) => {
     parseInt(process.env.SALT_ROUND)
   );
 
-  // Update the password and store the old password in the previousPasswords array if not already stored
-  if (!previousPasswords.some((hash) => bcrypt.compareSync(rescueTeam.password, hash))) {
-    previousPasswords.push(rescueTeam.password);
-  }
-  
-  await rescueTeamsModel.updateOne(
-    { _id: req.user._id },
-    { password: hashNewPassword, previousPasswords }
-  );
+  // Update the password and store the old password in the previousPasswords array
+  previousPasswords.push(rescueTeam.password);
+
+  rescueTeam.password = hashNewPassword;
+  rescueTeam.previousPasswords = previousPasswords;
+  await rescueTeam.save()
 
   // Return a success response
   return res.status(201).json({

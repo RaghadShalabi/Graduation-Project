@@ -280,10 +280,8 @@ export const forgetPassword = async (req, res, next) => {
   );
 
 
-  //store the old password in the previousPasswords array if not already stored
-  if (!previousPasswords.some((hash) => bcrypt.compareSync(user.password, hash))) {
+  //store the old password in the previousPasswords array 
     previousPasswords.push(user.password);
-  }
 
   // Update user's password and reset the code
   user.password = hashNewPassword;

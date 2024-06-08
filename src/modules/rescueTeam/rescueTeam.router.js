@@ -7,6 +7,7 @@ import { asyncHandler } from '../../middleware/errorHandling.js';
 
 router.get('/pendingRescueTeams', auth(endPoint.getPendingRescueTeams), asyncHandler(rescueTeamController.getPendingRescueTeams));
 router.put('/approveRescueTeam/:rescueTeamId', auth(endPoint.approveRescueTeam), asyncHandler(rescueTeamController.approveRescueTeam));
+router.delete('/deleteRescueTeam/:rescueTeamId', auth(endPoint.deleteRescueTeam), asyncHandler(rescueTeamController.deleteRescueTeam));
 router.get('/info', auth(endPoint.getRescueTeamInfo), asyncHandler(rescueTeamController.getRescueTeamInfo));
 router.get('/allVictims', auth(endPoint.getAllVictims), asyncHandler(rescueTeamController.getAllVictims));
 router.get('/sosVictims', auth(endPoint.getSosVictims), asyncHandler(rescueTeamController.getSosVictims))

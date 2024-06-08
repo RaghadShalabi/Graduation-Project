@@ -1,8 +1,9 @@
 import { roles } from "../../middleware/auth.js";
 
 export const endPoint = {
-    getPendingRescueTeams:[roles.SuperAdmin],
+    getPendingRescueTeams: [roles.SuperAdmin],
     approveRescueTeam: [roles.SuperAdmin],
+    deleteRescueTeam: [roles.SuperAdmin],
     getRescueTeamInfo: [roles.RescueTeam, roles.SuperAdmin],
     getAllVictims: [roles.RescueTeam, roles.SuperAdmin],
     getSosVictims: [roles.RescueTeam, roles.SuperAdmin],
