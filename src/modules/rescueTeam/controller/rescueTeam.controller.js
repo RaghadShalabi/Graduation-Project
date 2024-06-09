@@ -15,10 +15,12 @@ export const getPendingRescueTeams = async (req, res, next) => {
   }
 
   // Find all RescueTeams where acceptedAdmin is false
-  const pendingRescueTeams = await rescueTeamsModel.find({
-    acceptedAdmin: false,
-    role: "RescueTeam",
-  }).select("name email city role acceptedAdmin");
+  const pendingRescueTeams = await rescueTeamsModel
+    .find({
+      acceptedAdmin: false,
+      role: "RescueTeam",
+    })
+    .select("name email city role acceptedAdmin");
 
   // If no pending rescue teams found
   if (pendingRescueTeams.length === 0) {
@@ -41,7 +43,9 @@ export const approveRescueTeam = async (req, res, next) => {
     );
   }
 
-  const rescueTeam = await rescueTeamsModel.findById(rescueTeamId).select("name email city role acceptedAdmin");
+  const rescueTeam = await rescueTeamsModel
+    .findById(rescueTeamId)
+    .select("name email city role acceptedAdmin");
   if (!rescueTeam) {
     return next(new Error("RescueTeam not found", { cause: 404 }));
   }
@@ -58,9 +62,7 @@ export const approveRescueTeam = async (req, res, next) => {
 
   await sendEmail(rescueTeam.email, "Account Approved", html);
 
-  return res
-    .status(200)
-    .json({ message: "Success", rescueTeam });
+  return res.status(200).json({ message: "Success", rescueTeam });
 };
 
 // Function for SuperAdmin to delete a RescueTeam
@@ -79,7 +81,7 @@ export const deleteRescueTeam = async (req, res, next) => {
   // Find and delete the rescue team by ID
   const rescueTeam = await rescueTeamsModel.findByIdAndDelete(rescueTeamId);
   if (!rescueTeam) {
-    return next(new Error('RescueTeam not found', { cause: 404 }));
+    return next(new Error("RescueTeam not found", { cause: 404 }));
   }
 
   // Send deletion email to the RescueTeam
@@ -91,16 +93,15 @@ export const deleteRescueTeam = async (req, res, next) => {
 
   await sendEmail(rescueTeam.email, "Account Deleted", html);
 
-  return res
-    .status(200)
-    .json({ message: "Success" });
+  return res.status(200).json({ message: "Success" });
 };
-
 
 // Function to get rescue team's information by _id in token
 export const getRescueTeamInfo = async (req, res, next) => {
   // Find the rescue team by ID from the token
-  const rescueTeam = await rescueTeamsModel.findById(req.user._id).select("name email city role");
+  const rescueTeam = await rescueTeamsModel
+    .findById(req.user._id)
+    .select("name email city role");
   if (!rescueTeam) {
     return next(new Error("Rescue team not found", { cause: 404 }));
   }
@@ -122,7 +123,9 @@ export const getAllVictims = async (req, res, next) => {
     .select("name city location heartRate");
 
   if (victims.length === 0) {
-    return res.status(200).json({ message: "No victims found in this city", victims: [] });
+    return res
+      .status(200)
+      .json({ message: "No victims found in this city", victims: [] });
   }
 
   return res.status(200).json({ message: "Success", victims });
@@ -138,14 +141,18 @@ export const getSosVictims = async (req, res, next) => {
   // Find unRescued victims who have pressed the SOS button in the same city as the rescue team
   // Select specific fields to return
   const victims = await victimModel
-    .find({ city: rescueTeam.city, rescueStatus: false, sosStatus: true })
+    .find({
+      city: rescueTeam.city,
+      $or: [{ status: "danger", status: "inProgress" }],
+    })
     .select("name city location heartRate rescueStatus");
 
   // If no victims are found, return a message indicating this
   if (victims.length === 0) {
-    return res
-      .status(200)
-      .json({ message: "No unRescued victims found in this city", victims: [] });
+    return res.status(200).json({
+      message: "No unRescued victims found in this city",
+      victims: [],
+    });
   }
 
   // Sort unRescued victims by heart rate and timestamp
@@ -192,9 +199,7 @@ export const updateVictimRescueStatus = async (req, res, next) => {
   victim.rescueStatus = rescueStatus;
   await victim.save();
 
-  res
-    .status(200)
-    .json({ message: "Success", victim });
+  res.status(200).json({ message: "Success", victim });
 };
 
 export const viewMap = async (req, res, next) => {
@@ -205,10 +210,12 @@ export const viewMap = async (req, res, next) => {
   }
 
   // Find all victims in the same city as the rescue team
-  const victims = await victimModel.find({
-    city: rescueTeam.city,
-    sosStatus: true,
-  }).select("name email message location city heartRate sosStatus rescueStatus status");
+  const victims = await victimModel
+    .find({
+      city: rescueTeam.city,
+      $or: [{ status: "danger", status: "inProgress" }],
+    })
+    .select("name email message location city heartRate status");
 
   // If no victims are found, return a message indicating this
   if (victims.length === 0) {
@@ -254,7 +261,9 @@ export const updateRescueTeamInfo = async (req, res, next) => {
   const { name, city } = req.body;
 
   // Find the rescue team by ID
-  const rescueTeam = await rescueTeamsModel.findById(req.user._id).select("name city");
+  const rescueTeam = await rescueTeamsModel
+    .findById(req.user._id)
+    .select("name city");
   if (!rescueTeam) {
     return next(new Error("Rescue team not found", { cause: 404 }));
   }
@@ -288,7 +297,9 @@ export const updatePassword = async (req, res, next) => {
   }
 
   // Find the rescue team member by ID from the request user object
-  const rescueTeam = await rescueTeamsModel.findById(req.user._id).select("name email city role password previousPasswords");
+  const rescueTeam = await rescueTeamsModel
+    .findById(req.user._id)
+    .select("name email city role password previousPasswords");
 
   // Check if the old password matches the current password stored in the database
   const match = bcrypt.compareSync(oldPassword, rescueTeam.password);
@@ -333,7 +344,7 @@ export const updatePassword = async (req, res, next) => {
 
   rescueTeam.password = hashNewPassword;
   rescueTeam.previousPasswords = previousPasswords;
-  await rescueTeam.save()
+  await rescueTeam.save();
 
   // Return a success response
   return res.status(201).json({
