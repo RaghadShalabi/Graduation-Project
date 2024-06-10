@@ -1,51 +1,54 @@
-import { Schema, model } from 'mongoose'
+import { Schema, model } from "mongoose";
 
-const rescueTeamsSchema = new Schema({
+const rescueTeamsSchema = new Schema(
+  {
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     previousPasswords: {
-        type: [String],
-        default: []
+      type: [String],
+      default: [],
     },
     confirmEmail: {
-        type: Boolean,
-        default: false,
+      type: Boolean,
+      default: false,
     },
     city: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     sendCode: {
-        type: String,
-        default: null,
+      type: String,
+      default: null,
     },
     acceptedAdmin: {
-        type: Boolean,
-        default: false,
+      type: Boolean,
+      default: false,
     },
     role: {
-        type: String,
-        enum: ["RescueTeam", "SuperAdmin"],
-        default: "RescueTeam"
+      type: String,
+      enum: ["RescueTeam", "SuperAdmin"],
+      default: "RescueTeam",
     },
     changePasswordTime: {
-        type: Date,
+      type: Date,
     },
-}, {
+  },
+  {
     timestamps: true,
-});
+  }
+);
 
-const rescueTeamsModel = model('RescueTeams', rescueTeamsSchema)
+const rescueTeamsModel = model("RescueTeams", rescueTeamsSchema);
 
 export default rescueTeamsModel;

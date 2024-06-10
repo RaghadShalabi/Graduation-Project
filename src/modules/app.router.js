@@ -19,6 +19,7 @@ const initApp = (app, express) => {
   app.use("/auth", authRouter);
   app.use("/victim", victimRouter);
   app.use("/rescueTeam", rescueTeamRouter);
+  
   app.use(globalErrorHandler);
 
   app.get("*", (req, res) => {

@@ -64,3 +64,4 @@ const victimSchema = new Schema(
 const victimModel = model("Victim", victimSchema);
 
 export default victimModel;
+

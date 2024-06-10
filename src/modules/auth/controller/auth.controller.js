@@ -173,7 +173,9 @@ export const confirmEmail = async (req, res, next) => {
     return res.redirect(`https://www.google.com`);
   }
 
-  return res.status(200).json({ message: "Email confirmed successfully", user });
+  return res
+    .status(200)
+    .json({ message: "Email confirmed successfully", user });
 };
 
 // Controller to send reset password code to the user
@@ -225,7 +227,6 @@ export const sendCode = async (req, res, next) => {
   }
   return res.status(201).json({ message: "success", user });
 };
-
 
 export const forgetPassword = async (req, res, next) => {
   const { newPassword, code } = req.body;
@@ -279,9 +280,8 @@ export const forgetPassword = async (req, res, next) => {
     parseInt(process.env.SALT_ROUND)
   );
 
-
-  //store the old password in the previousPasswords array 
-    previousPasswords.push(user.password);
+  //store the old password in the previousPasswords array
+  previousPasswords.push(user.password);
 
   // Update user's password and reset the code
   user.password = hashNewPassword;
