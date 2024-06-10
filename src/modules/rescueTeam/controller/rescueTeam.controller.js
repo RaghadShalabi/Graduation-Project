@@ -215,7 +215,7 @@ export const viewMap = async (req, res, next) => {
       city: rescueTeam.city,
       $or: [{ status: "danger", status: "inProgress" }],
     })
-    .select("name email message location city heartRate status");
+    .select("name email message location city");
 
   // If no victims are found, return a message indicating this
   if (victims.length === 0) {
