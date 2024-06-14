@@ -61,4 +61,10 @@ router.put(
   asyncHandler(rescueTeamController.updateRescueTeamInfo)
 );
 
+router.delete(
+  "/deleteAccount",
+  auth(endPoint.deleteRescueTeamAccount),
+  asyncHandler(rescueTeamController.deleteRescueTeamAccount)
+);
+
 export default router;

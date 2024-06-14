@@ -337,3 +337,28 @@ export const updatePassword = async (req, res, next) => {
         rescueTeam,
     });
 };
+
+export const deleteRescueTeamAccount = async (req, res, next) => {
+    const userId = req.user._id;
+  
+    // Find the RescueTeam by ID
+    const rescueTeam = await rescueTeamsModel.findById(userId);
+  
+    if (!rescueTeam) {
+      return next(new Error('RescueTeam not found', { cause: 404 }));
+    }
+  
+    // Delete the RescueTeam account using deleteOne
+    await rescueTeamsModel.deleteOne({ _id: userId });
+  
+    // Send deletion email to the RescueTeam
+    const html = `<div>
+        <h2>Account Deletion Notification</h2>
+        <p>Hi ${rescueTeam.name},</b><br>
+        Your account has been successfully deleted.</p>
+    </div>`;
+  
+    await sendEmail(rescueTeam.email, "Account Deleted", html);
+  
+    return res.status(200).json({ message: 'RescueTeam account deleted successfully' });
+  };
