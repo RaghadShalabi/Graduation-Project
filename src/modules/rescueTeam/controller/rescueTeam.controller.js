@@ -265,13 +265,16 @@ export const updateRescueTeamInfo = async (req, res, next) => {
     const { secure_url, public_id } = await cloudinary.uploader.upload(
         req.file.path,
         {
-            folder: `${process.env.APP_NAME}/rescueTeam/profileImage`,
+            folder: `${process.env.APP_NAME}/rescueTeam/profileImage/${rescueTeam._id}`,
         }
     );
     if (rescueTeam.profileImage && rescueTeam.profileImage.public_id) {
         await cloudinary.uploader.destroy(rescueTeam.profileImage.public_id);
     }
     rescueTeam.profileImage = { secure_url, public_id };
+
+
+    
     }
 
     await rescueTeam.save();

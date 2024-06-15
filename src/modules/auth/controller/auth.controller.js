@@ -170,7 +170,7 @@ export const confirmEmail = async (req, res, next) => {
 
   // Check if the user is a RescueTeam and redirect them to the sign-in page
   if (user.role === "RescueTeam") {
-    return res.redirect('https://iamalive-front.onrender.com/');
+    return res.redirect(process.env.SIGN_IN_REDIRECT);
   }
 
   return res
