@@ -12,5 +12,5 @@ export const endPoint = {
   deleteDeadVictims: [roles.RescueTeam, roles.SuperAdmin],
   updatePassword: [roles.RescueTeam, roles.SuperAdmin],
   updateRescueTeamInfo: [roles.RescueTeam, roles.SuperAdmin],
-  deleteRescueTeamAccount : [roles.RescueTeam]
+  deleteRescueTeamAccount : [roles.RescueTeam],
 };

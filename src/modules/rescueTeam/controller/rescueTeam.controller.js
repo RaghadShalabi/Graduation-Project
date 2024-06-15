@@ -2,6 +2,7 @@ import rescueTeamsModel from "../../../../DB/rescueTeam.model.js";
 import victimModel from "../../../../DB/victim.model.js";
 import bcrypt from "bcryptjs";
 import sendEmail from "../../../services/sendEmail.js";
+import cloudinary from "../../../services/cloudinary.js";
 
 // Function to get all RescueTeams needing approval
 export const getPendingRescueTeams = async (req, res, next) => {
@@ -95,7 +96,7 @@ export const deleteRescueTeam = async (req, res, next) => {
 // Function to get rescue team's information by _id in token
 export const getRescueTeamInfo = async (req, res, next) => {
     // Find the rescue team by ID from the token
-    const rescueTeam = await rescueTeamsModel.findById(req.user._id).select("name email city role");
+    const rescueTeam = await rescueTeamsModel.findById(req.user._id).select("name email city role profileImage");
     if (!rescueTeam) {
         return next(new Error("Rescue team not found", { cause: 404 }));
     }
@@ -248,23 +249,33 @@ export const deleteDeadVictims = async (req, res, next) => {
 
 // Function to update rescue team's information
 export const updateRescueTeamInfo = async (req, res, next) => {
-    // Extract new values from the request body
-    const { name, city } = req.body;
+    const city = req.body.city.toLowerCase();
+    const { name } = req.body;
 
     // Find the rescue team by ID
-    const rescueTeam = await rescueTeamsModel.findById(req.user._id).select("name city");
+    const rescueTeam = await rescueTeamsModel.findById(req.user._id).select("name city profileImage");
     if (!rescueTeam) {
         return next(new Error("Rescue team not found", { cause: 404 }));
     }
 
-    // Update the rescue team's information
     if (name) rescueTeam.name = name;
     if (city) rescueTeam.city = city;
 
-    // Save the updated rescue team
+    if (req.file) {
+    const { secure_url, public_id } = await cloudinary.uploader.upload(
+        req.file.path,
+        {
+            folder: `${process.env.APP_NAME}/rescueTeam/profileImage`,
+        }
+    );
+    if (rescueTeam.profileImage && rescueTeam.profileImage.public_id) {
+        await cloudinary.uploader.destroy(rescueTeam.profileImage.public_id);
+    }
+    rescueTeam.profileImage = { secure_url, public_id };
+    }
+
     await rescueTeam.save();
 
-    // Return a success response
     return res.status(200).json({
         message: "Success",
         rescueTeam,
@@ -340,25 +351,25 @@ export const updatePassword = async (req, res, next) => {
 
 export const deleteRescueTeamAccount = async (req, res, next) => {
     const userId = req.user._id;
-  
+
     // Find the RescueTeam by ID
     const rescueTeam = await rescueTeamsModel.findById(userId);
-  
+
     if (!rescueTeam) {
-      return next(new Error('RescueTeam not found', { cause: 404 }));
+        return next(new Error('RescueTeam not found', { cause: 404 }));
     }
-  
+
     // Delete the RescueTeam account using deleteOne
     await rescueTeamsModel.deleteOne({ _id: userId });
-  
+
     // Send deletion email to the RescueTeam
     const html = `<div>
         <h2>Account Deletion Notification</h2>
         <p>Hi ${rescueTeam.name},</b><br>
         Your account has been successfully deleted.</p>
     </div>`;
-  
+
     await sendEmail(rescueTeam.email, "Account Deleted", html);
-  
+
     return res.status(200).json({ message: 'RescueTeam account deleted successfully' });
-  };
+};

@@ -6,7 +6,8 @@ import sendEmail from "../../../services/sendEmail.js";
 import { customAlphabet } from "nanoid";
 
 export const signUp = async (req, res, next) => {
-  const { name, email, city, password, isVictim = false } = req.body;
+  const city = req.body.city.toLowerCase();
+  const { name, email, password, isVictim = false } = req.body;
 
   let newUser;
   const hashPassword = bcrypt.hashSync(

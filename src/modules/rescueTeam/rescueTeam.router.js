@@ -4,6 +4,7 @@ import * as rescueTeamController from "./controller/rescueTeam.controller.js";
 import { endPoint } from "../rescueTeam/rescueTeam.endpoint.js";
 import { auth } from "../../middleware/auth.js";
 import { asyncHandler } from "../../middleware/errorHandling.js";
+import fileUpload, { fileValidation } from "../../services/multer.js";
 
 router.get(
   "/pendingRescueTeams",
@@ -57,6 +58,7 @@ router.patch(
 );
 router.put(
   "/updateInfo",
+  fileUpload(fileValidation.image).single("image"),
   auth(endPoint.updateRescueTeamInfo),
   asyncHandler(rescueTeamController.updateRescueTeamInfo)
 );

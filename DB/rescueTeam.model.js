@@ -40,6 +40,9 @@ const rescueTeamsSchema = new Schema(
       enum: ["RescueTeam", "SuperAdmin"],
       default: "RescueTeam",
     },
+    profileImage: {
+      type: Object
+    },
     changePasswordTime: {
       type: Date,
     },

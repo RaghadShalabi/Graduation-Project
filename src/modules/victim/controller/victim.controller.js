@@ -109,7 +109,8 @@ export const sendSOSMessage = async (req, res) => {
 // Function to update victim's information
 export const updateVictimInfo = async (req, res, next) => {
     // Extract new values from the request body
-    const { name, city } = req.body;
+    const city = req.body.city.toLowerCase();
+    const { name } = req.body;
 
     // Find the victim by ID
     const victim = await victimModel.findById(req.user._id);
