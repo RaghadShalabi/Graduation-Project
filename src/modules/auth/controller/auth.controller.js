@@ -121,7 +121,7 @@ export const signIn = async (req, res, next) => {
     process.env.SIGN_IN_SECRET_KEY
     //,{ expiresIn: "1h" }
   );
-
+  
   const refreshToken = jwt.sign(
     {
       id: user._id,
