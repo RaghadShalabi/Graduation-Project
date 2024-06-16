@@ -138,7 +138,7 @@ export const getSosVictims = async (req, res, next) => {
             city: rescueTeam.city,
             $or: [{ status: "danger" }, { status: "inProgress" }],
         })
-        .select("name city location heartRate status");
+        .select("name city location heartRate status message");
 
     // If no victims are found, return a message indicating this
     if (victims.length === 0) {
@@ -259,16 +259,16 @@ export const updateRescueTeamInfo = async (req, res, next) => {
     if (city) rescueTeam.city = city;
 
     if (req.file) {
-    const { secure_url, public_id } = await cloudinary.uploader.upload(
-        req.file.path,
-        {
-            folder: `${process.env.APP_NAME}/rescueTeam/profileImage/${rescueTeam._id}`,
+        const { secure_url, public_id } = await cloudinary.uploader.upload(
+            req.file.path,
+            {
+                folder: `${process.env.APP_NAME}/rescueTeam/profileImage/${rescueTeam._id}`,
+            }
+        );
+        if (rescueTeam.profileImage && rescueTeam.profileImage.public_id) {
+            await cloudinary.uploader.destroy(rescueTeam.profileImage.public_id);
         }
-    );
-    if (rescueTeam.profileImage && rescueTeam.profileImage.public_id) {
-        await cloudinary.uploader.destroy(rescueTeam.profileImage.public_id);
-    }
-    rescueTeam.profileImage = { secure_url, public_id }; 
+        rescueTeam.profileImage = { secure_url, public_id };
     }
     await rescueTeam.save();
 
