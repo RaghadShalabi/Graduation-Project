@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import sendEmail from "../../../services/sendEmail.js";
 import cloudinary from "../../../services/cloudinary.js";
 
+
 // Function to get all RescueTeams needing approval
 export const getPendingRescueTeams = async (req, res, next) => {
     // Check if the requesting user is a SuperAdmin
