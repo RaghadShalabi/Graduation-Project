@@ -216,9 +216,6 @@ export const viewMap = async (req, res, next) => {
         return res.status(200).json({ message: "No victims found in this city" });
     }
 
-    // Extract location of all victims
-    //const locations = victims.map((victim) => victim.location);
-
     return res.status(200).json({ message: "Success", victims });
 };
 
@@ -271,12 +268,8 @@ export const updateRescueTeamInfo = async (req, res, next) => {
     if (rescueTeam.profileImage && rescueTeam.profileImage.public_id) {
         await cloudinary.uploader.destroy(rescueTeam.profileImage.public_id);
     }
-    rescueTeam.profileImage = { secure_url, public_id };
-
-
-    
+    rescueTeam.profileImage = { secure_url, public_id }; 
     }
-
     await rescueTeam.save();
 
     return res.status(200).json({
@@ -350,29 +343,4 @@ export const updatePassword = async (req, res, next) => {
         message: "Success",
         rescueTeam,
     });
-};
-
-export const deleteRescueTeamAccount = async (req, res, next) => {
-    const userId = req.user._id;
-
-    // Find the RescueTeam by ID
-    const rescueTeam = await rescueTeamsModel.findById(userId);
-
-    if (!rescueTeam) {
-        return next(new Error('RescueTeam not found', { cause: 404 }));
-    }
-
-    // Delete the RescueTeam account using deleteOne
-    await rescueTeamsModel.deleteOne({ _id: userId });
-
-    // Send deletion email to the RescueTeam
-    const html = `<div>
-        <h2>Account Deletion Notification</h2>
-        <p>Hi ${rescueTeam.name},</b><br>
-        Your account has been successfully deleted.</p>
-    </div>`;
-
-    await sendEmail(rescueTeam.email, "Account Deleted", html);
-
-    return res.status(200).json({ message: 'RescueTeam account deleted successfully' });
 };

@@ -14,34 +14,43 @@ export const getVictimInfo = async (req, res, next) => {
     return res.status(200).json({ message: "Success", victim });
 };
 
-export const setEmergencyContacts = async (req, res, next) => {
-    const userId = req.user._id; // ID of the victim from the authenticated user
-    const { contactsEmail } = req.body; // New emergency contacts from request body
 
-    // Append new emergency contacts only if they do not already exist in the array
+// Function to set emergency contacts for a victim
+export const setEmergencyContacts = async (req, res, next) => {
+    // Get user ID from the authenticated user
+    const userId = req.user._id;
+
+    // Get new emergency contacts from the request body
+    const { contactsEmail } = req.body;
+
+    // Find the victim by ID and update the emergency contacts
     const victim = await victimModel.findByIdAndUpdate(
         userId,
         { $addToSet: { contactsEmail: { $each: contactsEmail } } }, // Use $addToSet with $each to add only unique emails
         { new: true } // Return the updated document
     );
 
+    // Check if the victim exists
     if (!victim) {
         return next(new Error("Victim not found", { cause: 404 }));
     }
-
-    // Respond with success and the updated document
+    
     res.status(200).json({ message: "Emergency contacts updated successfully.", victim });
 };
 
-//Set an email to all emergency contacts
-export const setEmergencyMessage = async (req, res) => {
-    const userId = req.user._id; // Assuming you have user authentication that sets req.user
-    const { message } = req.body; // Get the emergency message from the request body
 
-    // Find the victim by ID and update the message
+// Function to set an emergency message for all emergency contacts
+export const setEmergencyMessage = async (req, res, next) => {
+    // Get user ID from the authenticated user
+    const userId = req.user._id;
+
+    // Get the emergency message from the request body
+    const { message } = req.body;
+
+    // Find the victim by ID and update the emergency message
     const victim = await victimModel.findByIdAndUpdate(
         userId,
-        { $set: { message: message } },
+        { message: message },
         { new: true, runValidators: true } // Return the updated document and run schema validators
     );
 
@@ -56,20 +65,27 @@ export const setEmergencyMessage = async (req, res) => {
     });
 };
 
-export const setHeartAndLocation = async (req, res) => {
-    const userId = req.user._id; // Assuming user ID is stored in req.user
-    const { heartRate, location } = req.body; // Data from the frontend
+// Function to set heart rate and location of a victim
+export const setHeartAndLocation = async (req, res, next) => {
+    // Get user ID from the authenticated user
+    const userId = req.user._id;
+
+    // Destructure heartRate and location from the request body
+    const { heartRate, location } = req.body;
+
+    // Find and update the victim's document in the database
     const victim = await victimModel.findByIdAndUpdate(
         userId,
         { heartRate, location },
         { new: true } // Return the updated document
     );
 
+    // Check if the victim exists
     if (!victim) {
         return next(new Error("Victim not found", { cause: 404 }));
     }
-    
-    // check if the heart rate is safe or not
+
+    // check if the heart rate is safe or not and update the status accordingly
     if (heartRate > 100) {
         victim.status = "danger";
     } else if (heartRate < 100 && heartRate > 60) {
@@ -79,33 +95,39 @@ export const setHeartAndLocation = async (req, res) => {
     }
 
     await victim.save();
-    // Respond with success and the updated victim document
+
     res.status(200).json({ message: "Heart rate and location updated successfully.", victim });
 };
 
-export const sendSOSMessage = async (req, res) => {
-    const userId = req.user._id; // User ID from authenticated user
-    const victim = await victimModel.findById(userId); // Retrieve the victim's details
+// Function to send SOS message and update victim's status
+export const sendSOSMessage = async (req, res, next) => {
+    // Get user ID from the authenticated user
+    const userId = req.user._id;
 
+    // Retrieve the victim's details from the database
+    const victim = await victimModel.findById(userId);
+
+    // Check if the victim exists
     if (!victim) {
         return next(new Error("Victim not found", { cause: 404 }));
     }
 
-    // Retrieve contacts and message from the victim's document
+    // Destructure contacts and message from the victim's document
     const { contactsEmail, message } = victim;
 
-    if (contactsEmail.length === 0) {
-        return next(new Error("No contacts to send to", { cause: 400 }));
+    // Check if there are any contacts to send the message to
+    if (contactsEmail && contactsEmail.length > 0) {
+        // Sending email to each contact
+        for (const email of contactsEmail) {
+            await sendEmail(email, "SOS - Urgent", message);
+        }
     }
 
-    // Sending email to each contact
-    contactsEmail.forEach(async (email) => {
-        await sendEmail(email, "SOS - Urgent", message);
-    });
-
+    // Update the victim's status to "danger"
     victim.status = "danger";
     await victim.save();
-    res.status(200).json({ message: "SOS message sent to all emergency contacts.", victim });
+
+    res.status(200).json({ message: "Success", victim });
 };
 
 // Function to update victim's information
