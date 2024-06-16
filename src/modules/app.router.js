@@ -12,6 +12,10 @@ const initApp = async (app, express) => {
     app.use(cors());
     app.use(express.json());
 
+    app.get("/", (req, res) => {
+        return res.status(200).json("Welcome...");
+    });
+
     //Routes
     app.use("/auth", authRouter);
     app.use("/victim", victimRouter);
