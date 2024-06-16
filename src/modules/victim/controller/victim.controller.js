@@ -73,10 +73,11 @@ export const setHeartAndLocation = async (req, res) => {
     if (heartRate > 100) {
         victim.status = "danger";
     } else if (heartRate < 100 && heartRate > 60) {
-        victim.status = "normal";
+        victim.status = "safe";
     } else if (heartRate < 60) {
         victim.status = "danger";
     }
+
     await victim.save();
     // Respond with success and the updated victim document
     res.status(200).json({ message: "Heart rate and location updated successfully.", victim });

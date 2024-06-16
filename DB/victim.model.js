@@ -43,8 +43,8 @@ const victimSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["danger", "normal", "inProgress"],
-      default: "normal",
+      enum: ["danger", "safe", "inProgress"],
+      default: "safe",
     },
     isVictim: { type: Boolean, default: false },
     role: { type: String, default: "Victim" },
