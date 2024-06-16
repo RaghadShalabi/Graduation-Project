@@ -5,7 +5,6 @@ import victimRouter from "./victim/victim.router.js";
 import rescueTeamRouter from "./rescueTeam/rescueTeam.router.js";
 
 import cors from "cors";
-import victimModel from "../../DB/victim.model.js";
 
 const initApp = async (app, express) => {
     connectDB();
