@@ -20,7 +20,7 @@ function fileUpload(customValidation = []) {
     }
     // Initialize multer with the configured file filter and storage settings
     const upload = multer({ fileFilter, storage });
-    
+
     return upload;
 }
 
