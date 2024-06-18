@@ -112,19 +112,20 @@ export const getRescueTeamInfo = async (req, res, next) => {
 };
 
 export const getAllRescueTeamProfiles = async (req, res, next) => {
+  const superAdmin = await rescueTeamsModel.findById(req.user._id);
   // Check if the requesting user is a SuperAdmin
-  if (req.user.role !== roles.SuperAdmin) {
+  if (superAdmin.role !== "SuperAdmin") {
     return next(
-      new Error("Forbidden: You do not have the required permissions.", {
+      new Error("Only SuperAdmins can view Rescue Teams profile", {
         cause: 403,
       })
     );
   }
 
-  // Find all rescue team profiles excluding password field
-  const rescueTeams = await rescueTeamsModel
-    .find({ confirmEmail: true, acceptedAdmin: true })
-    .select("-password");
+  const rescueTeams = await rescueTeamsModel.find({
+    confirmEmail: true,
+    acceptedAdmin: true,
+  });
 
   // Check if there are any rescue teams
   if (rescueTeams.length === 0) {
@@ -136,6 +137,73 @@ export const getAllRescueTeamProfiles = async (req, res, next) => {
   // Respond with the list of rescue team profiles
   return res.status(200).json({ message: "Success", rescueTeams });
 };
+
+// Function to get a specific rescue team profile by ID
+export const getRescueTeamProfileById = async (req, res, next) => {
+  const superAdmin = await rescueTeamsModel.findById(req.user._id);
+  // Check if the requesting user is a SuperAdmin
+  if (superAdmin.role !== "SuperAdmin") {
+    return next(
+      new Error("Only SuperAdmins can view Rescue Team profile", {
+        cause: 403,
+      })
+    );
+  }
+
+ // Find the rescue team profile
+ const rescueTeam = await rescueTeamsModel.findOne({
+    _id: req.params.id,
+    acceptedAdmin: true,
+    confirmEmail: true
+  });
+
+  // Check if the rescue team exists
+  if (!rescueTeam) {
+    return next(
+      new Error("ٌRescue team not found", {
+        cause: 404,
+      })
+    );
+  }
+
+  return res
+    .status(200)
+    .json({
+      message: "Success",
+      rescueTeam,
+    });
+};
+
+// Function to delete a specific rescue team profile by ID
+export const deleteRescueTeamById = async (req, res, next) => {
+    const superAdmin = await rescueTeamsModel.findById(req.user._id);
+  
+    // Check if the requesting user is a SuperAdmin
+    if (superAdmin.role !== "SuperAdmin") {
+      return next(new Error("Only SuperAdmins can delete Rescue Team profile", {
+        cause: 403,
+      }));
+    }
+  
+    // Find and delete the rescue team profile by ID
+    const rescueTeam = await rescueTeamsModel.findOneAndDelete({
+      _id: req.params.id,
+      acceptedAdmin: true,
+      confirmEmail: true
+    });
+  
+    // Check if the rescue team existed
+    if (!rescueTeam) {
+      return next(new Error("Rescue team not found or not authorized", {
+        cause: 404,
+      }));
+    }
+  
+    return res.status(200).json({
+      message: "Success"
+    });
+  };
+
 
 export const getAllVictims = async (req, res, next) => {
   // Find the rescue team by ID

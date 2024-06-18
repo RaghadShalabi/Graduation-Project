@@ -27,6 +27,21 @@ router.get(
   asyncHandler(rescueTeamController.getRescueTeamInfo)
 );
 router.get(
+  "/getAllRescueTeamProfiles",
+  auth(endPoint.getAllRescueTeamProfiles),
+  asyncHandler(rescueTeamController.getAllRescueTeamProfiles)
+);
+router.get(
+  "/rescueTeamProfile/:id",
+  auth(endPoint.getRescueTeamProfileById),
+  asyncHandler(rescueTeamController.getRescueTeamProfileById)
+);
+router.delete(
+  "/deleteRescueTeam/:id",
+  auth(endPoint.deleteRescueTeamById),
+  asyncHandler(rescueTeamController.deleteRescueTeamById)
+);
+router.get(
   "/allVictims",
   auth(endPoint.getAllVictims),
   asyncHandler(rescueTeamController.getAllVictims)

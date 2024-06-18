@@ -121,8 +121,6 @@ export const signIn = async (req, res, next) => {
     process.env.SIGN_IN_SECRET_KEY
   );
 
-
-
   return res.status(200).json({
     message: "Success login",
     token,
