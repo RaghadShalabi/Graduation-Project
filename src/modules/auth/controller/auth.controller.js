@@ -119,16 +119,6 @@ export const signIn = async (req, res, next) => {
       role: isVictim ? user.role /*"Victim"*/ : user.role /*"RescueTeam"*/,
     },
     process.env.SIGN_IN_SECRET_KEY
-    //, { expiresIn: "1h" }
-  );
-
-  const refreshToken = jwt.sign(
-    {
-      id: user._id,
-      role: isVictim ? user.role /*"Victim"*/ : user.role /*"RescueTeam"*/,
-    },
-    process.env.SIGN_IN_SECRET_KEY
-    //, { expiresIn: 60 * 60 * 24 * 30 }
   );
 
   return res.status(200).json({
