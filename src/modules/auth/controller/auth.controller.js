@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 import sendEmail from "../../../services/sendEmail.js";
 import { customAlphabet } from "nanoid";
 
-
 export const signUp = async (req, res, next) => {
   const city = req.body.city.toLowerCase();
   const { name, email, password, isVictim = false } = req.body;
@@ -77,7 +76,6 @@ export const signUp = async (req, res, next) => {
   });
 };
 
-
 export const signIn = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -130,7 +128,7 @@ export const signIn = async (req, res, next) => {
       role: isVictim ? user.role /*"Victim"*/ : user.role /*"RescueTeam"*/,
     },
     process.env.SIGN_IN_SECRET_KEY
-//, { expiresIn: 60 * 60 * 24 * 30 }
+    //, { expiresIn: 60 * 60 * 24 * 30 }
   );
 
   return res.status(200).json({
