@@ -32,11 +32,21 @@ export const signUp = async (req, res, next) => {
     if (existingRescueTeam) {
       return next(new Error("Email already in use", { cause: 409 }));
     }
+    if (!req.file) {
+      return next(new Error("please provide a file", { cause: 404 }));
+    }
+    const { secure_url, public_id } = await cloudinary.uploader.upload(
+      req.file.path,
+      {
+        folder: `${process.env.APP_NAME}/rescueTeam/practiceImage`,
+      }
+    );
     newUser = await rescueTeamsModel.create({
       name,
       email,
       city,
       password: hashPassword,
+      practiceImage:{secure_url,public_id}
     });
   }
 
