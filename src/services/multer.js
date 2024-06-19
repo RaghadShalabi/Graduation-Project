@@ -2,6 +2,7 @@ import multer from "multer";
 
 export const fileValidation = {
     image: ["image/png", "image/jpeg", "image/webp"],
+    file: ["application.pdf"],
 };
 
 // Define a function to handle file uploads with custom validation
