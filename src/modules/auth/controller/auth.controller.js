@@ -4,6 +4,7 @@ import rescueTeamsModel from "../../../../DB/rescueTeam.model.js";
 import jwt from "jsonwebtoken";
 import sendEmail from "../../../services/sendEmail.js";
 import { customAlphabet } from "nanoid";
+import cloudinary from "../../../services/cloudinary.js";
 
 export const signUp = async (req, res, next) => {
   const city = req.body.city.toLowerCase();
