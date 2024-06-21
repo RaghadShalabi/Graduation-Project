@@ -43,9 +43,6 @@ const rescueTeamsSchema = new Schema(
     profileImage: {
       type: Object
     },
-    practiceImage:{
-      type:Object
-    },
     changePasswordTime: {
       type: Date,
     },
